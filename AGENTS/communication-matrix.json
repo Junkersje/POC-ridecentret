@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "agent-communication-matrix",
+  "version": "1.0.0",
+  "description": "Konfigurationsfil for hierarkisk kommunikation mellem agenter. Angiver eksplicit hvilke agenter der må kalde hinanden, og hvilke der er blokeret.",
+  "rules": {
+    "default_policy": "DENY_ALL",
+    "description": "Kun eksplicit angivne forbindelser i 'allowed_outbound' og 'allowed_inbound' er tilladt."
+  },
+  "agents": {
+    "constitution-agent": {
+      "role": "Formulere og opdatere projektets grundregler i .specify/memory/constitution.md",
+      "allowed_inbound": [
+        "user"
+      ],
+      "allowed_outbound": [
+        "github-manager"
+      ],
+      "denied_outbound": [
+        "*"
+      ],
+      "notes": "Må KUN uddelegere git commits til github-manager. Må IKKE udføre git-handlinger selv."
+    },
+    "github-manager": {
+      "role": "Versionstyring og sikre Git-operationer via scripts/commit_tool.ps1",
+      "allowed_inbound": [
+        "constitution-agent",
+        "user"
+      ],
+      "allowed_outbound": [],
+      "tools": [
+        "scripts/commit_tool.ps1"
+      ],
+      "notes": "Eksekveringsagent (leaf worker). Modtager opgaver fra godkendte agenter og udfører git-kald."
+    }
+  }
+}
+
